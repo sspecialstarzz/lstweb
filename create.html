@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Create - Lostera</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #101018;
+            color: white;
+        }
+
+        nav {
+            height: 70px;
+            display: flex;
+            align-items: center;
+            padding: 0 50px;
+            background: #171722;
+            border-bottom: 1px solid #29293a;
+        }
+
+        .logo {
+            color: white;
+            text-decoration: none;
+            font-size: 30px;
+            font-weight: 900;
+            letter-spacing: 2px;
+        }
+
+        main {
+            min-height: calc(100vh - 70px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 30px;
+        }
+
+        h1 {
+            font-size: 55px;
+            margin-bottom: 15px;
+        }
+
+        p {
+            color: #aaa;
+            font-size: 20px;
+            margin-bottom: 35px;
+        }
+
+        .create-box {
+            width: 500px;
+            max-width: 100%;
+            padding: 40px;
+            background: #191925;
+            border: 1px solid #29293a;
+            border-radius: 15px;
+        }
+
+        input {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 1px solid #363649;
+            border-radius: 8px;
+            background: #101018;
+            color: white;
+            font-size: 16px;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            background: white;
+            color: #111;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+        <a class="logo" href="index.html">LOSTERA</a>
+    </nav>
+
+    <main>
+
+        <h1>Create a World</h1>
+
+        <p>
+            Your imagination is the limit.
+        </p>
+
+        <div class="create-box">
+
+            <input
+                type="text"
+                placeholder="World name"
+            >
+
+            <button>
+                CREATE WORLD
+            </button>
+
+        </div>
+
+    </main>
+
+</body>
+</html>
