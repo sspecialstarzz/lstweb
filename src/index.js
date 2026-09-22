@@ -8,7 +8,10 @@ export default {
             "Access-Control-Allow-Headers": "Content-Type, Authorization"
         };
 
+        // =========================
         // CORS
+        // =========================
+
         if (request.method === "OPTIONS") {
             return new Response(null, {
                 headers: corsHeaders
@@ -20,65 +23,47 @@ export default {
         // =========================
 
         if (url.pathname === "/api/status") {
-            return Response.json({
-                success: true,
-                service: "Lostera API",
-                status: "online",
-                version: "1.0.0"
-            }, {
-                headers: corsHeaders
-            });
+            return Response.json(
+                {
+                    success: true,
+                    service: "Lostera API",
+                    status: "online",
+                    version: "1.0.0"
+                },
+                {
+                    headers: corsHeaders
+                }
+            );
         }
 
         // =========================
-        // DATABASE TEST
+        // DATABASE DEBUG TEST
         // =========================
 
         if (url.pathname === "/api/db-test") {
-
-            if (!env.SUPABASE_URL || !env.SUPABASE_SECRET_KEY) {
-                return Response.json({
-                    success: false,
-                    error: "Supabase environment variables are missing"
-                }, {
-                    status: 500,
-                    headers: corsHeaders
-                });
-            }
-
-            const response = await fetch(
-                `${env.SUPABASE_URL}/rest/v1/players?select=id&limit=1`,
+            return Response.json(
                 {
-                    method: "GET",
-                    headers: {
-                        "apikey": env.SUPABASE_SECRET_KEY
-                    }
+                    success: true,
+
+                    // These only report whether the variables exist.
+                    // They DO NOT expose their values.
+                    supabaseUrlFound: !!env.SUPABASE_URL,
+                    supabaseSecretKeyFound: !!env.SUPABASE_SECRET_KEY,
+
+                    // Lengths help us determine whether
+                    // Cloudflare is receiving the values.
+                    supabaseUrlLength: env.SUPABASE_URL
+                        ? env.SUPABASE_URL.length
+                        : 0,
+
+                    supabaseSecretKeyLength: env.SUPABASE_SECRET_KEY
+                        ? env.SUPABASE_SECRET_KEY.length
+                        : 0
+                },
+                {
+                    headers: corsHeaders
                 }
             );
-
-            if (!response.ok) {
-                const errorText = await response.text();
-
-                return Response.json({
-                    success: false,
-                    error: "Database request failed",
-                    details: errorText
-                }, {
-                    status: 500,
-                    headers: corsHeaders
-                });
-            }
-
-            const players = await response.json();
-
-            return Response.json({
-                success: true,
-                database: "connected",
-                table: "players",
-                playersFound: players.length
-            }, {
-                headers: corsHeaders
-            });
         }
 
         // =========================
@@ -86,49 +71,59 @@ export default {
         // =========================
 
         if (url.pathname === "/api/dev") {
-
             const suppliedCode = url.searchParams.get("devcode");
 
             if (!env.DEVCODE) {
-                return Response.json({
-                    success: false,
-                    error: "Developer code is not configured"
-                }, {
-                    status: 500,
-                    headers: corsHeaders
-                });
+                return Response.json(
+                    {
+                        success: false,
+                        error: "Developer code is not configured"
+                    },
+                    {
+                        status: 500,
+                        headers: corsHeaders
+                    }
+                );
             }
 
             if (!suppliedCode || suppliedCode !== env.DEVCODE) {
-                return Response.json({
-                    success: false,
-                    error: "Developer access denied"
-                }, {
-                    status: 403,
-                    headers: corsHeaders
-                });
+                return Response.json(
+                    {
+                        success: false,
+                        error: "Developer access denied"
+                    },
+                    {
+                        status: 403,
+                        headers: corsHeaders
+                    }
+                );
             }
 
-            return Response.json({
-                success: true,
-                section: "Lostera Developer",
-                message: "Developer access granted"
-            }, {
-                headers: corsHeaders
-            });
+            return Response.json(
+                {
+                    success: true,
+                    section: "Lostera Developer",
+                    message: "Developer access granted"
+                },
+                {
+                    headers: corsHeaders
+                }
+            );
         }
 
         // =========================
         // UNKNOWN ENDPOINT
         // =========================
 
-        return Response.json({
-            success: false,
-            error: "Endpoint not found"
-        }, {
-            status: 404,
-            headers: corsHeaders
-        });
+        return Response.json(
+            {
+                success: false,
+                error: "Endpoint not found"
+            },
+            {
+                status: 404,
+                headers: corsHeaders
+            }
+        );
     }
 };
-
