@@ -1,9 +1,11 @@
 {
-    "$schema": "node_modules/wrangler/config-schema.json",
+  "$schema": "node_modules/wrangler/config-schema.json",
 
-    "name": "lstweb",
+  "name": "lstweb",
+  "main": "src/index.js",
+  "compatibility_date": "2026-09-22",
 
-    "main": "src/index.js",
-
-    "compatibility_date": "2026-09-22"
+  "vars": {
+    "SUPABASE_URL": "YOUR_SUPABASE_URL"
+  }
 }
