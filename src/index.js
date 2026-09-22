@@ -2,14 +2,16 @@ export default {
     async fetch(request, env) {
         const url = new URL(request.url);
 
-        // CORS
+        const corsHeaders = {
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+            "Access-Control-Allow-Headers": "Content-Type, Authorization"
+        };
+
+        // CORS preflight
         if (request.method === "OPTIONS") {
             return new Response(null, {
-                headers: {
-                    "Access-Control-Allow-Origin": "*",
-                    "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-                    "Access-Control-Allow-Headers": "Content-Type, Authorization"
-                }
+                headers: corsHeaders
             });
         }
 
@@ -21,9 +23,31 @@ export default {
                 status: "online",
                 version: "1.0.0"
             }, {
-                headers: {
-                    "Access-Control-Allow-Origin": "*"
-                }
+                headers: corsHeaders
+            });
+        }
+
+        // Developer section
+        if (url.pathname === "/api/dev") {
+
+            const suppliedCode = url.searchParams.get("devcode");
+
+            if (!suppliedCode || suppliedCode !== env.DEVCODE) {
+                return Response.json({
+                    success: false,
+                    error: "Developer access denied"
+                }, {
+                    status: 403,
+                    headers: corsHeaders
+                });
+            }
+
+            return Response.json({
+                success: true,
+                section: "Lostera Developer",
+                message: "Developer access granted"
+            }, {
+                headers: corsHeaders
             });
         }
 
@@ -33,9 +57,7 @@ export default {
             error: "Endpoint not found"
         }, {
             status: 404,
-            headers: {
-                "Access-Control-Allow-Origin": "*"
-            }
+            headers: corsHeaders
         });
     }
 };
