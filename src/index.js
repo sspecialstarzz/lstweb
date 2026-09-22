@@ -37,33 +37,94 @@ export default {
         }
 
         // =========================
-        // DATABASE DEBUG TEST
+        // DATABASE TEST
         // =========================
 
         if (url.pathname === "/api/db-test") {
-            return Response.json(
-                {
-                    success: true,
+            if (!env.SUPABASE_URL || !env.SUPABASE_SECRET_KEY) {
+                return Response.json(
+                    {
+                        success: false,
+                        error: "Supabase environment variables are missing"
+                    },
+                    {
+                        status: 500,
+                        headers: corsHeaders
+                    }
+                );
+            }
 
-                    // These only report whether the variables exist.
-                    // They DO NOT expose their values.
-                    supabaseUrlFound: !!env.SUPABASE_URL,
-                    supabaseSecretKeyFound: !!env.SUPABASE_SECRET_KEY,
+            try {
+                const response = await fetch(
+                    `${env.SUPABASE_URL}/rest/v1/players?select=id&limit=1`,
+                    {
+                        method: "GET",
+                        headers: {
+                            "apikey": env.SUPABASE_SECRET_KEY
+                        }
+                    }
+                );
 
-                    // Lengths help us determine whether
-                    // Cloudflare is receiving the values.
-                    supabaseUrlLength: env.SUPABASE_URL
-                        ? env.SUPABASE_URL.length
-                        : 0,
+                const responseText = await response.text();
 
-                    supabaseSecretKeyLength: env.SUPABASE_SECRET_KEY
-                        ? env.SUPABASE_SECRET_KEY.length
-                        : 0
-                },
-                {
-                    headers: corsHeaders
+                if (!response.ok) {
+                    return Response.json(
+                        {
+                            success: false,
+                            error: "Database request failed",
+                            status: response.status,
+                            details: responseText
+                        },
+                        {
+                            status: 500,
+                            headers: corsHeaders
+                        }
+                    );
                 }
-            );
+
+                let players;
+
+                try {
+                    players = JSON.parse(responseText);
+                } catch {
+                    return Response.json(
+                        {
+                            success: false,
+                            error: "Supabase returned invalid JSON",
+                            details: responseText
+                        },
+                        {
+                            status: 500,
+                            headers: corsHeaders
+                        }
+                    );
+                }
+
+                return Response.json(
+                    {
+                        success: true,
+                        database: "connected",
+                        table: "players",
+                        playersFound: players.length
+                    },
+                    {
+                        headers: corsHeaders
+                    }
+                );
+
+            } catch (error) {
+                return Response.json(
+                    {
+                        success: false,
+                        error: "Database connection error",
+                        details: error.message
+                    },
+                    {
+                        status: 500,
+                        headers: corsHeaders
+                    }
+                );
+            }
         }
 
         // =========================
